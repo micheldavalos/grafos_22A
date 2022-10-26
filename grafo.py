@@ -52,6 +52,10 @@ class AristaNoDirigida:
     # def __str__(self):
     #     return f"({self.origen} ---- {self.ponderacion} ---> ({self.destino}))"
 
+@dataclass()
+class Adyacente:
+    vertice: Vertice
+    ponderacion: Any
 class GrafoNoDirigido:
     def __init__(self) -> None:
         self.aristas: List[AristaNoDirigida] = []
@@ -92,9 +96,9 @@ class GrafoNoDirigido:
 
     def agregar_dict(self, vertice_origen: Vertice, vertice_destino: Vertice, ponderacion):
         if vertice_origen not in self.ady:
-            self.ady[vertice_origen] = [[vertice_destino, ponderacion]]
+            self.ady[vertice_origen] = [Adyacente(vertice=vertice_destino, ponderacion=ponderacion)]
         else:
-            self.ady[vertice_origen].append([vertice_destino, ponderacion])
+            self.ady[vertice_origen].append(Adyacente(vertice=vertice_destino, ponderacion=ponderacion))
 
     def print_lista_adyacencia(self):
         self.ady.clear()
