@@ -1,94 +1,100 @@
 from pprint import pprint, pformat
-
-class Nodo:
-    def __init__(self, dato) -> None:
-        self.dato = dato
-
-    def __eq__(self, other):
-        return self.dato == other.dato
-
-    def __str__(self):
-        return f"dato: {self.dato}"
-
-    def __repr__(self) -> str:
-        return f"Nodo({self.dato})"
-
-    def __hash__(self):
-        return hash(self.dato)
+from dataclasses import dataclass
+from typing import Any, List
 
 
-class Arista:
-    def __init__(self, origen: Nodo, destino: Nodo, ponderacion) -> None:
-        self.origen = origen
-        self.destino = destino
-        self.ponderacion = ponderacion
+@dataclass(unsafe_hash=True)
+class Vertice:
+    dato: Any
+    # def __init__(self, dato) -> None:
+    #     self.dato = dato
+    #
+    # def __eq__(self, other):
+    #     return self.dato == other.dato
+    #
+    # def __str__(self):
+    #     return f"dato: {self.dato}"
+    #
+    # def __repr__(self) -> str:
+    #     return f"Vertice({self.dato})"
+    #
+    # def __hash__(self):
+    #     return hash(self.dato)
 
-    def __str__(self):
-        return f"({self.origen} ---- {self.ponderacion} ---- ({self.destino}))"
+@dataclass(unsafe_hash=True)
+class AristaNoDirigida:
+    origen: Vertice
+    destino: Vertice
+    ponderacion: Any
+    # def __init__(self, origen: Vertice, destino: Vertice, ponderacion) -> None:
+    #     self.origen = origen
+    #     self.destino = destino
+    #     self.ponderacion = ponderacion
+    #
+    # def __str__(self):
+    #     return f"({self.origen} ---- {self.ponderacion} ---- ({self.destino}))"
+    #
+    # def __eq__(self, other):
+    #     return self.origen == other.origen and \
+    #     self.destino == other.destino
 
-    def __eq__(self, other):
-        return self.origen == other.origen and \
-        self.destino == other.destino
+    # def __repr__(self) -> str:
+    #     return f"{repr(self.origen)} ---- {self.ponderacion} ---- {repr(self.destino)}"
 
-    def __repr__(self) -> str:
-        return f"{repr(self.origen)} ---- {self.ponderacion} ---- {repr(self.destino)}"
+# class AristaNoDirigida(Arista):
+#     def dirigido(self):
+#         return False
+#
+# class AristaDirigida(Arista):
+#     def dirigido(self):
+#         return True
 
-class AristaNoDirigida(Arista):
-    def dirigido(self):
-        return False
+    # def __str__(self):
+    #     return f"({self.origen} ---- {self.ponderacion} ---> ({self.destino}))"
 
-class AristaDirigida(Arista):
-    def dirigido(self):
-        return True
-
-    def __str__(self):
-        return f"({self.origen} ---- {self.ponderacion} ---> ({self.destino}))"
-
-class Grafo:
+class GrafoNoDirigido:
     def __init__(self) -> None:
-        self.aristas = []
+        self.aristas: List[AristaNoDirigida] = []
         self.ady = {}
 
-    def agregar_arista(self, arista: Arista):
-        if arista not in self.aristas:
-            self.aristas.append(arista)
+    def agregar_arista(self, arista: AristaNoDirigida):
+        if arista in self.aristas:
+            print(f'La arista {arista} no se agregó porque ya fue agregada ')
+        self.aristas.append(arista)
 
-    def eliminar_arista(self, arista: Arista):
+    def eliminar_arista(self, arista: AristaNoDirigida):
         self.aristas.remove(arista)
 
-    def __str__(self):
-        return str([arista for arista in self.aristas])
+    def __repr__(self):
+        return pformat([arista for arista in self.aristas])
 
     def get_lista_adyacencia(self):
         self.ady.clear()
 
         grafo_no_dirigido = {
-            "Nodo origen": [ ["Nodo destino", 'ponderacion'] ],
-            "Nodo destino": [ ["Nodo origen", 'ponderacion'] ]
+            "Vertice origen": [ ["Vertice destino", 'ponderacion'] ],
+            "Vertice destino": [ ["Vertice origen", 'ponderacion'] ]
         }
 
         grafo_dirigido = {
-            "Nodo origen": [ ["Nodo destino", 'ponderacion'], ["Nodo destino", 'ponderacion']]
+            "Vertice origen": [ ["Vertice destino", 'ponderacion'], ["Vertice destino", 'ponderacion']]
         }
 
         for arista in self.aristas:
-            nodo_origen = arista.origen
-            nodo_destino = arista.destino
+            vertice_origen = arista.origen
+            vertice_destino = arista.destino
             ponderacion = arista.ponderacion
 
-            if arista.dirigido():
-                self.agregar_dict(nodo_origen, nodo_destino, ponderacion)
-            elif not arista.dirigido():
-                self.agregar_dict(nodo_origen, nodo_destino, ponderacion)
-                self.agregar_dict(nodo_destino, nodo_origen, ponderacion)
+            self.agregar_dict(vertice_origen, vertice_destino, ponderacion)
+            self.agregar_dict(vertice_destino, vertice_origen, ponderacion)
 
         return self.ady
 
-    def agregar_dict(self, nodo_origen, nodo_destino, ponderacion):
-        if nodo_origen not in self.ady:
-            self.ady[nodo_origen] = [ [nodo_destino, ponderacion] ]
+    def agregar_dict(self, vertice_origen: Vertice, vertice_destino: Vertice, ponderacion):
+        if vertice_origen not in self.ady:
+            self.ady[vertice_origen] = [[vertice_destino, ponderacion]]
         else:
-            self.ady[nodo_origen].append([nodo_destino, ponderacion])
+            self.ady[vertice_origen].append([vertice_destino, ponderacion])
 
     def print_lista_adyacencia(self):
         self.ady.clear()
