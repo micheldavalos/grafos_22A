@@ -1,3 +1,4 @@
+from collections import defaultdict
 from pprint import pprint, pformat
 from dataclasses import dataclass
 from typing import Any, List
@@ -59,7 +60,7 @@ class Adyacente:
 class GrafoNoDirigido:
     def __init__(self) -> None:
         self.aristas: List[AristaNoDirigida] = []
-        self.ady = {}
+        self.ady = defaultdict(list)
 
     def agregar_arista(self, arista: AristaNoDirigida):
         if arista in self.aristas:
@@ -95,11 +96,11 @@ class GrafoNoDirigido:
         return self.ady
 
     def agregar_dict(self, vertice_origen: Vertice, vertice_destino: Vertice, ponderacion):
-        if vertice_origen not in self.ady:
-            self.ady[vertice_origen] = [Adyacente(vertice=vertice_destino, ponderacion=ponderacion)]
-        else:
-            self.ady[vertice_origen].append(Adyacente(vertice=vertice_destino, ponderacion=ponderacion))
-
+        # if vertice_origen not in self.ady:
+        #     self.ady[vertice_origen] = [Adyacente(vertice=vertice_destino, ponderacion=ponderacion)]
+        # else:
+        #     self.ady[vertice_origen].append(Adyacente(vertice=vertice_destino, ponderacion=ponderacion))
+        self.ady[vertice_origen].append(Adyacente(vertice=vertice_destino, ponderacion=ponderacion))
     def print_lista_adyacencia(self):
         self.ady.clear()
         self.get_lista_adyacencia()
